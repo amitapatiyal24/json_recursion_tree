@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+ul{
+  list-style-type: none;
+}
+#tree{
+background-color: #D3D3D3;
+width: 400px;
+height: auto;
+padding:10px ;
+}
+
+.arrow {
+  cursor: pointer;
+   -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none;
+}
+
+.arrow::before {
+  content: "\25B6";
+  color: black;
+  display: inline-block;
+  margin-right: 6px;
+  -ms-transform: rotate(90deg); /* IE 9 */
+  -webkit-transform: rotate(90deg); /* Safari */'
+  transform: rotate(90deg);
+  transform: rotate(90deg); 
+}
+
+
+</style>
+</head>
+<body>
+<div id="tree"></div>
+</body>
+<script type="text/javascript" src="treeview.js"></script>
+<script>
+// replace external json file with ajax call.
+var json = nodes;
+
+// calling createTreeDom function once getNestedDataSet() will return the tree json structure.
+var listFormation = createTreeDom(getNestedDataSet(json, 0));
+ document.getElementById('tree').appendChild(listFormation);
+ 
+//return tree json structure usig recursion.
+	function getNestedDataSet(dataSet, parent) {
+	// empty array to store nestedJson result.
+	var nestedJson = [];
+	//Use native array.forEach
+		dataSet.forEach((item) => {
+		//continue unless item.parent is parent
+			if(item.parent == parent) {
+				var child = getNestedDataSet(dataSet, item.id)
+		// If no child, skip code below and push the item into nestedJson array.
+				if( child && child.length) {
+					item.child = child
+				}
+			nestedJson.push(item)
+			}
+		});
+		//return tree json structure
+		return nestedJson;
+	}
+	
+// creating html using recustion..
+	function createTreeDom(jsonobject) { 
+	 // if there's no children, then the call returns undefined and the <ul> won't be created
+		  if (!jsonobject.length) return;
+		  let ul = document.createElement('ul');
+		  jsonobject.forEach((item) => {
+			let li = document.createElement('li');
+			li.innerHTML = item.text;
+			// If no child, skip code below.
+			if(item['child'] && item['child'].length > 0){
+				li.setAttribute("class","arrow")
+				//call the same function if child property is there.
+				let childrenUl = createTreeDom(item.child);				
+					if (childrenUl) {
+						li.append(childrenUl);
+					}
+			}
+			ul.append(li);
+		  })
+		  // return the ul and li tree struction.
+		return ul;
+	}
+	
+
+</script>
+
+</html>
